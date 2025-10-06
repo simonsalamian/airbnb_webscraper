@@ -323,21 +323,14 @@ class SessionHandler:
             adults = self.adults
 
         raw_params = [
-            {"filterName": "adults", "filterValues": [str(adults)]},
             {"filterName": "cdnCacheSafe", "filterValues": ["False"]},
             {"filterName": "channel", "filterValues": ["EXPLORE"]},
             {"filterName": "datePickerType", "filterValues": ["calendar"]},
             {"filterName": "flexibleTripLengths", "filterValues": ["one_week"]},
-            {"filterName": "guests", "filterValues": ["2"]},
+            {"filterName": "guests", "filterValues": [str(adults)]},
             {"filterName": "itemsPerGrid", "filterValues": ["18"]},
-            {"filterName": "monthlyEndDate", "filterValues": ["2026-02-01"]},
-            {"filterName": "monthlyLength", "filterValues": ["3"]},
-            {"filterName": "monthlyStartDate", "filterValues": ["2025-11-01"]},
             {"filterName": "neLat", "filterValues": [str(coords["neLat"])]},
             {"filterName": "neLng", "filterValues": [str(coords["neLng"])]},
-            {"filterName": "priceFilterInputType", "filterValues": ["2"]},
-            {"filterName": "priceFilterNumNights", "filterValues": ["4"]},
-            {"filterName": "query", "filterValues": ["Edinburgh"]},
             {"filterName": "refinementPaths", "filterValues": ["/homes"]},
             {"filterName": "screenSize", "filterValues": ["large"]},
             {"filterName": "searchByMap", "filterValues": ["true"]},

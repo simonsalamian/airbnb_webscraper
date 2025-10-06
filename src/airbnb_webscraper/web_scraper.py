@@ -454,7 +454,7 @@ class WebScraper:
         return [coords_1, coords_2, coords_3, coords_4]
 
 
-def get_next_weekdays(weeks_to_look_forward=14):
+def get_next_weekdays(weeks_to_look_forward=34):
     """
     Generates a date ranges for upcoming weekdays and weekends over a specified number of weeks.
     Starting from the next Monday (skipping the current week), this function calculates the Monday–Friday
@@ -527,7 +527,7 @@ def runAirbnbScrape(ctx):
     airAPI.iterateMapTiles('stays')
 
     ## Do not run pricing API if disabled in config.toml
-    if ctx.scrapePricing is None:
+    if ctx.scrapePricing is False:
         return
             
     logger.info("Starting Pricing API map runs")
@@ -572,7 +572,7 @@ if __name__ == '__main__':
     
     ## Web scraper
     generate_working_folders(ctx)
-    #runAirbnbScrape(ctx)
+    runAirbnbScrape(ctx)
     
     ## Generate CSV from JSON files
     data_handler.CSVfileBuilder_Runner()        

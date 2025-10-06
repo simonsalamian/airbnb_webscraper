@@ -8,17 +8,17 @@ URLS = {
     ## They may be subject to change at any time
         
     ## ExploreSearch is the old Airbnb Map API, it still works to produce ~98% of available listings
-    "explore": "https://www.airbnb.co.uk/api/v3/ExploreSearch?operationName=ExploreSearch&locale=en-GB",
+    "explore": "https://www.airbnb.com/api/v3/ExploreSearch?operationName=ExploreSearch&locale=en-GB",
     
     ## Stays is the current Airbnb Map API, used to append basic pricing data and fill in missing 2% of missing listings above
-    "stays": "https://www.airbnb.co.uk/api/v3/StaysSearch/910bfdc30d4cb9e84c1661dc34e5f1d0747cf689defcf900c146d1762722a7ae?operationName=StaysSearch&locale=en-GB",
+    "stays": "https://www.airbnb.com/api/v3/StaysSearch/910bfdc30d4cb9e84c1661dc34e5f1d0747cf689defcf900c146d1762722a7ae?operationName=StaysSearch&locale=en-GB",
 
     ## Listing Details, used to append all listing data for missing 5% above
     ## NO LONGER USED
     "listing_details": "https://www.airbnb.com/api/v3/StaysPdpSections/37d7cbb631196506c3990783fe194d81432d0fbf7362c668e547bb6475e71b37",
     
     ## The same as the above Stays API, uses prices label in this script to differentiate when dates are added
-    "pricing": "https://www.airbnb.co.uk/api/v3/StaysSearch/910bfdc30d4cb9e84c1661dc34e5f1d0747cf689defcf900c146d1762722a7ae?operationName=StaysSearch&locale=en-GB",
+    "pricing": "https://www.airbnb.com/api/v3/StaysSearch/910bfdc30d4cb9e84c1661dc34e5f1d0747cf689defcf900c146d1762722a7ae?operationName=StaysSearch&locale=en-GB",
 
     ## Data from the Airbnb listing page
     "description": "https://www.airbnb.co.uk/api/v3/StaysPdpSections/08e3ad2e3d75c9bede923485718ff2e7f6efe2ca1febb5192d78c51e17e8b4ca",

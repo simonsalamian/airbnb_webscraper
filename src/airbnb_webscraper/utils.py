@@ -3,6 +3,8 @@
 
 from time import sleep
 import random
+import requests
+import json
 
 
 def r_sleep(min_sleep):
@@ -28,3 +30,14 @@ def dict_subset(json_dict, *args):
         except (KeyError, IndexError, TypeError):
             return None
     return result
+
+def getExchangeRateFromUSD(currency):
+    """
+    Request exchange rate from a free API, converting from USD to target currency
+    
+    Returns:
+     - exchange rate (float)
+    """
+    response = requests.get(f'https://hexarate.paikama.co/api/rates/latest/USD?target={currency}')
+    exchange_rate_raw = json.loads(response.text)
+    return exchange_rate_raw['data']['mid']  
