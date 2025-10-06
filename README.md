@@ -14,11 +14,13 @@ Six different data sets can be generated for any location:
 - Amenities: Every amenity listed by the Airbnb host
 
 ## Usage
+Run *src/airbnb_webscraper/web_scraper.py* to start
+
 The scraper requires three variables, the *location_label*, *currency* and *airbnb_mapsearch_URL*.
 
 *location_label* is a string which generates the working folders and logging labels. This can be set to anything, but best practise is to label it after the location name, eg: Edinburgh, Berlin, etc.
 
-*currency* must refer to the ISO 4217 three letter currency code, eg (USD, GBP, EUR). The scraper will fail to grab any pricing data for unusual currencies which Airbnb does not accept.
+*currency* must refer to the ISO 4217 three letter currency code, eg (USD, GBP, EUR). The scraper grabs prices in USD, then converts them to the requested currency at mid-level rate for that day.
 
 *airbnb_mapsearch_URL* is the browser URL that must be copied from Airbnb.com. The URL is accessed by performing any text based search from the homepage (eg: Edinburgh). By default, Airbnb will search by text, giving a URL such as:
 ```
@@ -31,7 +33,6 @@ https://www.airbnb.com/s/Edinburgh--United-Kingdom/homes?...&ne_lat=55.979177908
 ```
 
 This URL can then be pasted into the scraper or into the config.toml file. Note *location_label* and *airbnb_mapsearch_URL* can be set to None in the toml file. In this case, the user is prompted to enter the location and URL in the script.
-Run *src/airbnb_webscraper/web_scraper.py* to start
 
 ## Config
 The config.toml file can allow or disallow the above datasets, to improve scrape speed:
