@@ -8,7 +8,7 @@ import shutil
 import csv
 
 ## Doorstep Analytics Scripts
-from utils import dict_subset
+from utils import dict_subset, getExchangeRateFromUSD
 
 ## Custom logging script
 from config_logging import setup_logging
@@ -31,6 +31,9 @@ class DataHandler():
         ## Get first entry date from the first JSON file's RecordInserted field. Used for Scrape Date field and CSV file naming
         self.first_entry_date = self.getFirstEntryDate()
         self.first_entry_date_str = self.first_entry_date.strftime("%d%m%Y")
+
+        ## Get exchange rate from USD:
+        self.exchange_rate = getExchangeRateFromUSD(self.ctx.currency)
         
         ## Generate CSV files
         self.JSONfiles_toCompleteCSVfile('Overview')
@@ -115,7 +118,7 @@ class DataHandler():
                 
             file_path = os.path.join(file_dir, filename)
             if os.path.getsize(file_path) < 1024:   ## Skip very small JSON files, likely Airbnb error was returned
-                logger.warning("JSON file {file_dir} is less than 1024 bytes")
+                logger.debug(f"JSON file {file_dir} is less than 1024 bytes")
                 continue
         
             ## Apply the correct transformation according to the runner_type, then append the output to a dataframe list
@@ -301,12 +304,16 @@ class DataHandler():
         this_row_dict.update({
             'BasicNightPrice_CheckIn': dict_subset(data, 'listingParamOverrides', 'checkin'),
             'BasicNightPrice_CheckOut': dict_subset(data, 'listingParamOverrides', 'checkout'),
-            'BasicNightPrice_String': basic_night_price_string,
-            'BasicNightPrice': basic_night_price,
             'Currency': self.ctx.currency,
-            'CleaningFee': cleaning_fee,
-            'AirbnbServiceFee': airbnb_service_fee,
-            'Taxes': taxes,
+            'BasicNightPrice': None if basic_night_price is None else round(self.exchange_rate * basic_night_price, 2),
+            'CleaningFee': None if cleaning_fee is None else round(self.exchange_rate * cleaning_fee, 2),
+            'AirbnbServiceFee': None if airbnb_service_fee is None else round(self.exchange_rate * airbnb_service_fee, 2),
+            'Taxes': None if taxes is None else round(self.exchange_rate * taxes, 2),
+            'BasicNightPriceString_USD': basic_night_price_string,
+            'BasicNightPrice_USD': basic_night_price,
+            'CleaningFee_USD': cleaning_fee,
+            'AirbnbServiceFee_USD': airbnb_service_fee,
+            'Taxes_USD': taxes,
             'RecordInserted': datetime.strptime(data['RecordInserted'], '%Y-%m-%d %H:%M:%S')
         })
         
@@ -334,8 +341,6 @@ class DataHandler():
         Returns:
             pd.DataFrame: DataFrame containing transformed calendar data for one listing
         """
-
-        df = pd.DataFrame()
 
         ## Iterate through each row of the Calendar JSON file
         rows = []
@@ -374,6 +379,7 @@ class DataHandler():
             
             rows.append(this_row_dict)
         
+        df = pd.DataFrame(rows)
         return df
 
     def transform_AirbnbPricing(self, data):
@@ -453,13 +459,18 @@ class DataHandler():
                     'Stay_Checkout': pricing_end_date,
                     'Stay_Length_Actual': abs((pricing_end_date - pricing_start_date).days),
                     'Currency': data.get('currency'),
-                    'Price_Verbose': fees["price_verbose"],
-                    'Price_Per_Night': fees["price_int"],
-                    'Discount_Description': fees['discount_description'],
-                    'Discount_Amount': fees['discount_amount'],
-                    'Cleaning_Fee': fees['cleaning_fee'],
-                    'Airbnb_Service_Fee': fees['airbnb_service_fee'],
-                    'Taxes': fees['taxes'],
+                    'PricePerNight': None if fees["price_int"] is None else round(self.exchange_rate * fees["price_int"], 2),
+                    'DiscountDescription': fees['discount_description'],
+                    'DiscountAmount': None if fees["discount_amount"] is None else round(self.exchange_rate * fees["discount_amount"], 2),
+                    'CleaningFee': None if fees["cleaning_fee"] is None else round(self.exchange_rate * fees["cleaning_fee"], 2),
+                    'AirbnbServiceFee': None if fees["airbnb_service_fee"] is None else round(self.exchange_rate * fees["airbnb_service_fee"], 2),
+                    'Taxes': None if fees["taxes"] is None else round(self.exchange_rate * fees["taxes"], 2),
+                    'PriceVerbose_USD': fees["price_verbose"],
+                    'PricePerNight_USD': fees["price_int"],
+                    'DiscountAmount_USD': fees['discount_amount'],
+                    'CleaningFee_USD': fees['cleaning_fee'],
+                    'AirbnbServiceFee_USD': fees['airbnb_service_fee'],
+                    'Taxes_USD': fees['taxes'],
                     'RecordInserted': data.get('RecordInserted')
                 }
             
@@ -732,8 +743,8 @@ class DataHandler():
                     reviewer_region, reviewer_country = dict_subset(review, 'localizedReviewerLocation').split(', ', 2)[:2]
                     
             ## Get data with defaults to None or 0
-            reviewer_pictureURL = None if 'Portrait/Avatars' in review['reviewer']['pictureUrl'] else review['reviewer']['pictureUrl']
-            host_pictureURL = None if 'Portrait/Avatars' in review['reviewee']['pictureUrl'] else review['reviewee']['pictureUrl']
+            reviewer_pictureURL = None if (url := dict_subset(review, 'reviewer', 'pictureUrl')) and 'Portrait/Avatars' in url else url
+            host_pictureURL = None if (url := dict_subset(review, 'reviewee', 'pictureUrl')) and 'Portrait/Avatars' in url else url
             isHostHighlightedReview = False if dict_subset(review, 'isHostHighlightedReview') is None else True
             photocounts = len(review['reviewPhotoUrls']) if review['reviewPhotoUrls'] is not None else 0
             

@@ -67,7 +67,13 @@ class FileManager:
                 
     def listJSONFilesInFolder(self, folder):
         """ Returns a list of all JSON files in the given folder """
-        return [os.path.splitext(filename)[0] for filename in os.listdir(folder) if filename.endswith('.json')]
+        base_path = os.path.dirname(os.path.dirname(folder))  # go up two folders
+        target_path = os.path.join(base_path, "data", self.ctx.location, "overview")
+        return [
+            os.path.splitext(filename)[0]
+            for filename in os.listdir(target_path)
+            if filename.endswith(".json")
+        ]
     
     def JSONFileDataGenerator(self, folder):
         """ Use generator to yield each JSON file, to avoid loading all into memory at once """
